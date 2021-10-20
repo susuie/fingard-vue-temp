@@ -1,0 +1,112 @@
+/*eslint-disable*/
+import Vue from "vue";
+import {
+    Aside,
+    Button,
+    Breadcrumb,
+    BreadcrumbItem,
+    Cascader,
+    Checkbox,
+    CheckboxGroup,
+    Col,
+    Collapse,
+    CollapseItem,
+    Carousel,
+    CarouselItem,
+    Container,
+    Dialog,
+    DatePicker,
+    Dropdown,
+    DropdownMenu,
+    DropdownItem,
+    Form,
+    FormItem,
+    Footer,
+    Header,
+    Input,
+    Image,
+    Icon,
+    Loading,
+    Main,
+    Menu,
+    MenuItem,
+    Message,
+    MessageBox,
+    Option,
+    Pagination,
+    Popover,
+    Progress,
+    Radio,
+    RadioGroup,
+    Row,
+    Select,
+    Submenu,
+    Scrollbar,
+    Table,
+    TableColumn,
+    Tabs,
+    Tag,
+    TabPane,
+    Tooltip,
+    Tree,
+    Upload,
+    Link
+} from "element-ui";
+
+Vue.prototype.$ELEMENT = { size: 'small', zIndex: 3000 };
+Vue.use(Aside);
+Vue.use(Button);
+Vue.use(Breadcrumb);
+Vue.use(BreadcrumbItem);
+Vue.use(Cascader);
+Vue.use(Checkbox);
+Vue.use(CheckboxGroup);
+Vue.use(Col);
+Vue.use(CollapseItem);
+Vue.use(Collapse);
+Vue.use(Carousel);
+Vue.use(CarouselItem);
+Vue.use(Container);
+Vue.use(DatePicker);
+Vue.use(Dialog);
+Vue.use(Dropdown);
+Vue.use(DropdownMenu);
+Vue.use(DropdownItem);
+Vue.use(Footer);
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(Header);
+Vue.use(Input);
+Vue.use(Image);
+Vue.use(Icon);
+Vue.use(Loading);
+Vue.use(Main);
+Vue.use(Menu);
+Vue.use(MenuItem);
+Vue.use(Option);
+Vue.use(Popover);
+Vue.use(Progress);
+Vue.use(Pagination);
+Vue.use(Radio);
+Vue.use(RadioGroup);
+Vue.use(Row);
+Vue.use(Select);
+Vue.use(Submenu);
+Vue.use(Table);
+Vue.use(TableColumn);
+Vue.use(Tabs);
+Vue.use(TabPane);
+Vue.use(Tag);
+Vue.use(Tooltip);
+Vue.use(Upload);
+Vue.use(Tree);
+Vue.use(Link);
+Vue.use(Scrollbar);
+Vue.use(Loading.directive)
+
+Vue.prototype.$loading = Loading.service
+Vue.component(Message.name,Message);
+Vue.component(MessageBox.name,MessageBox);
+Vue.prototype.$confirm = MessageBox.confirm;
+Vue.prototype.$alert = MessageBox.alert;
+Vue.prototype.$message = Message;
