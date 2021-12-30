@@ -1,22 +1,20 @@
 const path = require("path");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const CompressionPlugin = require("compression-webpack-plugin"); //gzip压缩
+const CompressionPlugin = require("compression-webpack-plugin");
 const debug = process.env.NODE_ENV !== "production";
 const resolve = dir => path.join(__dirname, dir);
 module.exports = {
-  publicPath: process.env.VUE_APP_PUBLIC_PATH, // 基本路径，在cli3.3之后弃用了baseURL
-  assetsDir: "assets", // 静态资源目录 (js, css, img, fonts)
+  publicPath: process.env.VUE_APP_PUBLIC_PATH,
+  assetsDir: "assets",
   // webpack配置
   chainWebpack: config => {
     //loader配置
-    // 本地开发配置
     config.resolve.alias
       .set("@", resolve("src"))
       .set("@assets", resolve("src/assets"));
     if (!debug) {
       const cdn = {
-        // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
         css: ["//unpkg.com/element-ui@2.13.1/lib/theme-chalk/index.css"],
         js: [
           "//unpkg.com/vue@2.6.11/dist/vue.min.js", // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
@@ -88,19 +86,7 @@ module.exports = {
   css: {
     // 是否使用css分离插件 ExtractTextPlugin
     extract: true,
-    // 开启 CSS source maps?是否在构建样式地图，false将提高构建速度
-    sourceMap: false,
-    // css预设器配置项
-    loaderOptions: {
-      scss: {
-        //向全局sass样式传入共享的全局变量，$src可以配置图片cdn前缀
-        // prependData:`
-        // @import "@sc"
-        // `
-      }
-    }
-    // 启用 CSS modules for all css / pre-processor files.
-    // modules: false
+    sourceMap: false
   },
   parallel: require("os").cpus().length > 1,
   // webpack-dev-server 相关配置
@@ -111,12 +97,7 @@ module.exports = {
     https: false,
     hotOnly: false,
     proxy: {
-      // "api/installment": {
-      //   target: "http://10.60.45.43:9080",
-      //   changeOrigin: true,
-      //   ws: true
-      // }
-      "/api/insurance": {
+      "/api/installment": {
         target: "http://rbttest.fingard.cn",
         changeOrigin: true,
         ws: true
