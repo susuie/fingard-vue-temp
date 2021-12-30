@@ -1,26 +1,14 @@
-import RTable from "./r-table.vue";
-import Query from "./query-conditions.vue";
-import Upload from "./upload.vue";
-import Tree from "./Tree.vue";
-import PButton from "./p-button.vue";
-import Tag from "./tag";
-export { RTable, Query, Upload, Tree, PButton, Tag };
-
-/*eslint-disable*/
-let componentList = [
-    'RTable',
-    'Query',
-    'Upload' ,
-    'Tree',
-    'PButton',
-    'Tag'
-]
-
+let r = require.context("./", false, /\.vue/);
+let componentList = r.keys().map(path => {
+  let name = path.split("/")[1].split(".")[0];
+  name = r(`${path}`).default;
+  return name;
+});
 export default {
-    RTable,Query,Upload,Tree,PButton,Tag,
-    install(Vue) {
-        componentList.forEach(item => {
-            Vue.component(item, this[item]);           
-        });
-    }
+  ...componentList,
+  install(Vue) {
+    componentList.forEach(item => {
+      Vue.component(item.name, item);
+    });
+  }
 };

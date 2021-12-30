@@ -261,6 +261,7 @@
 
 <script>
 export default {
+  name: "Query",
   props: {
     isHandle: {
       type: Boolean,

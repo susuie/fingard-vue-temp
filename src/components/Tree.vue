@@ -17,6 +17,7 @@
 
 <script>
 export default {
+  name: "Tree",
   props: {
     data: {
       type: Array,

@@ -46,6 +46,7 @@
 import "@/assets/fonts/iconfont.js";
 import { base64encode } from "@/utils/common.js";
 export default {
+  name: "VHead",
   props: {
     name: {
       default: "admin"

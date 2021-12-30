@@ -78,7 +78,7 @@
 
 <script>
 export default {
-  name: "uploadFile",
+  name: "Upload",
   props: {
     fileList: {
       type: Array,

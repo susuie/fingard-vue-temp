@@ -186,3 +186,15 @@ export const getTitle = function(menuList) {
   deepGet(menuList);
   return title;
 };
+//横杆转驼峰
+export const camelize = function(str) {
+  return str.replace(/-(\w)/g, function(_, c) {
+    return c ? c.toUpperCase() : "";
+  });
+};
+//首字母转大写
+export const ftoup = function(str) {
+  return str.replace(/\b(\w)|\s(\w)/g, function(c) {
+    return c.toUpperCase();
+  });
+};

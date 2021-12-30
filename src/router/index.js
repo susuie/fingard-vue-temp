@@ -1,11 +1,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import VueCookies from "vue-cookies";
-import index from "@/views/Index";
-import views from "@/views/router";
+import index from "@/pages/Index";
 
 Vue.use(VueRouter);
 const originalPush = VueRouter.prototype.push;
+//重写push方法，统一处理错误捕获
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err);
 };
@@ -19,15 +19,24 @@ const routes = [
   {
     path: "/Login",
     name: "Login",
-    component: () => import(/* webpackChunkName: "about" */ "@/views/Login.vue")
+    component: () => import(/* webpackChunkName: "about" */ "@/pages/Login.vue")
   },
   {
     path: "*",
     name: "error",
-    component: () => import(/* webpackChunkName: "about" */ "@/views/404")
+    component: () => import(/* webpackChunkName: "about" */ "@/pages/404")
   }
 ];
-routes[0].children = routes[0].children.concat(views.routers);
+const files = require.context("@/pages", true, /router\.js$/);
+let child = files.keys().map(key => {
+  const page = require("@/pages" + key.replace(".", ""));
+  return page.default;
+});
+child = child.reduce((all, item) => {
+  all.push(...item);
+  return all;
+}, []);
+routes[0].children = child;
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
@@ -39,9 +48,7 @@ router.beforeEach((to, from, next) => {
   let token = VueCookies.get("token");
   let userInfo = localStorage.getItem("userInfo");
   let userId = userInfo ? JSON.parse(userInfo).userId : "";
-  //console.log("执行路由(" + to.path + ")前，验证是否已经携带token：token=" + token + " | userId=" + userId)
   if (to.path === "/Login") {
-    // 如果是访问登录界面，如果用户会话信息存在，代表已登录过，跳转到主页
     if (token && token !== "null" && userId) {
       next({ path: "/" });
     } else {
@@ -49,10 +56,8 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (token === "null" || !token || !userId) {
-      // 如果访问非登录界面，且户会话信息不存在，代表未登录，则跳转到登录界面
       next({ path: "/Login" });
     } else {
-      // 进入主页面
       next();
     }
   }
