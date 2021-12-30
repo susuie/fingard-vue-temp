@@ -34,7 +34,7 @@
 # 项目运行说明
 * 首先请确保你的本地node版本在8.11.0 +
 * git clone 克隆项目到本地
-* 运行 npm i 或者 cnpm i 安装项目依赖
+* 运行 yarn 或者 npm i 安装项目依赖
 * 运行 npm run serve 启动项目
 
 # git commit message 规范解释
