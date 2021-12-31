@@ -14,17 +14,25 @@ const routes = [
     path: "/",
     name: "index",
     component: index,
-    children: []
+    children: [
+      {
+        path: "/home",
+        alias: "",
+        name: "Home",
+        component: () =>
+          import(/* webpackChunkName: "home" */ "@/pages/Home.vue")
+      }
+    ]
   },
   {
     path: "/Login",
     name: "Login",
-    component: () => import(/* webpackChunkName: "about" */ "@/pages/Login.vue")
+    component: () => import(/* webpackChunkName: "login" */ "@/pages/Login.vue")
   },
   {
     path: "*",
     name: "error",
-    component: () => import(/* webpackChunkName: "about" */ "@/pages/404")
+    component: () => import("@/pages/404")
   }
 ];
 const files = require.context("@/pages", true, /router\.js$/);
@@ -36,7 +44,7 @@ child = child.reduce((all, item) => {
   all.push(...item);
   return all;
 }, []);
-routes[0].children = child;
+routes[0].children = routes[0].children.concat(child);
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
