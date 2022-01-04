@@ -9,20 +9,14 @@ const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err);
 };
+//配置默认页面,将默认页面的文件名赋值给defaultPage
+let defaultPage = "dataImport";
 const routes = [
   {
     path: "/",
     name: "index",
     component: index,
-    children: [
-      {
-        path: "/home",
-        alias: "",
-        name: "Home",
-        component: () =>
-          import(/* webpackChunkName: "home" */ "@/pages/Home.vue")
-      }
-    ]
+    children: []
   },
   {
     path: "/Login",
@@ -41,10 +35,25 @@ let child = files.keys().map(key => {
   return page.default;
 });
 child = child.reduce((all, item) => {
-  all.push(...item);
+  for (let key in item) {
+    all.push(item[key]);
+  }
   return all;
 }, []);
-routes[0].children = routes[0].children.concat(child);
+let home = {
+  path: "/home",
+  alias: "",
+  name: "Home",
+  component: () => import(/* webpackChunkName: "home" */ "@/pages/Home.vue")
+};
+let others = child.filter(item => {
+  if (item.name === defaultPage) {
+    item.alias = "";
+    home = item;
+  }
+  return item.name !== defaultPage;
+});
+routes[0].children = routes[0].children.concat([home]).concat(others);
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
