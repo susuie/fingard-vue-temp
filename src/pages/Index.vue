@@ -37,6 +37,7 @@
       <Tag
         :TagLists="tagLists"
         :selectMenu="activeInfo"
+        :defaultPage="defaultPage"
         @tabClick="handleMenu"
         @tabRemove="handleTabRemove"
       />
@@ -57,6 +58,7 @@
 import VSidebar from "@/components/navbar/v-sidebar";
 import VHead from "@/components/v-head";
 import * as common from "@/http/implement/common";
+import localCache from "@/utils/cache";
 export default {
   name: "index",
   data() {
@@ -67,9 +69,8 @@ export default {
       menuTheme: "dark",
       MenuLists: [], // menuList
       activeURL: "", // current menu url
-      activeInfo: { url: "/home" }, // current info
+      activeInfo: {}, // current info
       rootid: "", // the root of menuTree
-      defaultFirstUrl: null,
       isCollapsed: false,
       isActive: false,
       index: -1,
@@ -78,8 +79,9 @@ export default {
       isRouterAlive: false,
       logo: require("@assets/images/logo.png"),
       hasPerms: false,
-      tagLists: [{ url: "/home", title: "首页", name: "home" }],
-      keepList: ["home"]
+      tagLists: [],
+      keepList: [],
+      defaultPage: {}
     };
   },
   components: {
@@ -91,19 +93,18 @@ export default {
     this.getMenuList(); // get menu data
   },
   mounted() {
-    let userInfo = localStorage.getItem("userInfo");
-    let tags = sessionStorage.getItem("tagLists");
-    let active = sessionStorage.getItem("activeInfo");
-    let keepList = sessionStorage.getItem("keepList");
-    this.userName = userInfo ? JSON.parse(userInfo).userName : userInfo;
-    this.tagLists = tags ? JSON.parse(tags) : this.tagLists;
-    this.keepList = keepList ? JSON.parse(keepList) : this.keepList;
-    this.activeInfo = active ? JSON.parse(active) : this.activeInfo;
+    this.userName = localCache.getCache("userInfo")?.userName;
+    this.defaultPage = localCache.getSession("home");
+    this.tagLists = localCache.getSession("tagLists") ?? [this.defaultPage];
+    this.keepList = localCache.getSession("keepList") ?? [
+      this.defaultPage.name
+    ];
+    this.activeInfo = localCache.getSession("activeInfo") ?? this.defaultPage;
   },
   watch: {
     tagLists(val) {
-      sessionStorage.setItem("tagLists", JSON.stringify(val));
-      sessionStorage.setItem("keepList", JSON.stringify(this.keepList));
+      localCache.setSession("tagLists", val);
+      localCache.setSession("keepList", this.keepList);
     },
     $route: {
       handler(to) {
@@ -115,12 +116,12 @@ export default {
         this.keepList = this.tagLists.map(item => {
           return item.name;
         });
-        sessionStorage.setItem("keepList", JSON.stringify(this.keepList));
+        localCache.setSession("keepList", this.keepList);
         this.activeInfo.name = to.name;
       }
     },
     activeInfo(val) {
-      sessionStorage.setItem("activeInfo", JSON.stringify(val));
+      localCache.setSession("activeInfo", val);
     }
   },
   methods: {
@@ -148,11 +149,6 @@ export default {
     collapsedSider: function() {
       this.index = -1;
       this.isCollapsed = !this.isCollapsed;
-      this.saveMenuStatus();
-    },
-    // save menu status
-    saveMenuStatus: function() {
-      this.$cookies.set("menuIsCollapsed", this.isCollapsed);
     },
     // handle menu route
     handleMenu(url, param) {
@@ -189,15 +185,17 @@ export default {
         that.tagLists.splice(1);
         this.keepList.splice(1);
       } else if (delInfo === "Other") {
-        if (activeInfo.url === "/home") {
+        if (activeInfo.url === this.defaultPage.url) {
           this.tagLists.splice(1);
           this.keepList.splice(1);
         } else {
           that.tagLists = that.tagLists.filter(tag => {
-            return tag.url === "/home" || tag.url === activeInfo.url;
+            return (
+              tag.url === this.defaultPage.url || tag.url === activeInfo.url
+            );
           });
           that.keepList = that.keepList.filter(name => {
-            return name === "home" || name === activeInfo.name;
+            return name === this.defaultPage.name || name === activeInfo.name;
           });
         }
       } else {

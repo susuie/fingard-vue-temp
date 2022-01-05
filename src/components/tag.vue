@@ -2,7 +2,7 @@
   <div class="menu-wrap">
     <div class="clearfix">
       <el-tag
-        :closable="item.url !== '/home'"
+        :closable="item.url !== defaultPage.url"
         v-for="item in TagLists"
         :key="item.url"
         :index="item.url"
@@ -45,6 +45,13 @@ export default {
       default() {
         return {};
       }
+    },
+    defaultPage: {
+      type: Object,
+      required: true,
+      default() {
+        return {};
+      }
     }
   },
   data() {
@@ -61,11 +68,14 @@ export default {
     },
     TagLists(val) {
       return val;
+    },
+    defaultPage(val) {
+      return val;
     }
   },
   methods: {
     handleClose(name) {
-      if (name === "0" || this.tabUrl === "/home") {
+      if (name === "0" || this.tabUrl === this.defaultPage.url) {
         this.$emit("tabRemove", this.TagLists[0], "All");
       } else {
         this.$emit("tabRemove", this.activeInfo, "Other");

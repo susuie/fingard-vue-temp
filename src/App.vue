@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import localCache from "@/utils/cache";
 export default {
   name: "app",
   data() {
@@ -39,11 +40,11 @@ export default {
       if (this.$route.path === "/Login") {
         return;
       }
-      let uuid = window.$cookies.get("token");
-      this.$cookies.set("token", uuid, 8 * 60 * 60); //in seconds
+      let uuid = localCache.getCookie("token");
+      localCache.setCookie("token", uuid, 8 * 60 * 60); //in seconds
       this.timeOut = setInterval(() => {
         this.$message.success("长时间未操作，请重新登录");
-        localStorage.setItem("userInfo", "");
+        localCache.deleteItem("userInfo");
         this.$router.push({ name: "Login" });
       }, 8 * 60 * 60 * 1000); //In milliseconds
     },

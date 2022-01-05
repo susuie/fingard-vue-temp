@@ -45,6 +45,7 @@
 <script>
 import "@/assets/fonts/iconfont.js";
 import { base64encode } from "@/utils/common.js";
+import localCache from "@/utils/cache";
 export default {
   name: "VHead",
   props: {
@@ -212,12 +213,9 @@ export default {
   },
   methods: {
     init() {
-      let user = localStorage.getItem("userInfo");
-      if (user) {
-        this.isFirstLogin = JSON.parse(user).firstLoginFlag;
-        if (this.isFirstLogin) {
-          this.dialogVisible = true;
-        }
+      this.isFirstLogin = localCache.getCache("userInfo")?.firstLoginFlag;
+      if (this.isFirstLogin) {
+        this.dialogVisible = true;
       }
     },
     collapsedSider() {
@@ -253,7 +251,7 @@ export default {
                     let showMessage = res.info + "，将为您跳转到登录页！";
                     that.$message.success(showMessage);
                     setTimeout(() => {
-                      localStorage.setItem("userInfo", "");
+                      localCache.deleteCache("userInfo");
                       that.$router.push("/Login");
                     }, 2000);
                   });
@@ -272,7 +270,7 @@ export default {
         callback(action) {
           if (action === "confirm") {
             that.$api.common.logOut().then(() => {
-              localStorage.setItem("userInfo", "");
+              localCache.deleteCache("userInfo");
               that.$router.push("/Login");
             });
           }

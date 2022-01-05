@@ -1,4 +1,5 @@
 import hyRequest from "../index";
+import localCache from "@/utils/cache";
 
 // get the menu data list
 export const getMenuList = data => {
@@ -8,7 +9,7 @@ export const loginDo = data => {
   return hyRequest.post({
     url: "/login/verifySms.pub",
     data,
-    headers: { token: window.$cookies.get("token") }
+    headers: { token: localCache.getCookie("token") }
   });
 };
 /*logout */

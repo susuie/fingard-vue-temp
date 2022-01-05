@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import VueCookies from "vue-cookies";
 import index from "@/pages/Index";
+import localCache from "@/utils/cache";
 
 Vue.use(VueRouter);
 const originalPush = VueRouter.prototype.push;
@@ -10,7 +10,10 @@ VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err);
 };
 //配置默认页面,将默认页面的文件名赋值给defaultPage
-let defaultPage = "dataImport";
+let defaultInfo = {
+  defaultPage: "Home",
+  defaultTitle: "首页"
+};
 const routes = [
   {
     path: "/",
@@ -47,11 +50,16 @@ let home = {
   component: () => import(/* webpackChunkName: "home" */ "@/pages/Home.vue")
 };
 let others = child.filter(item => {
-  if (item.name === defaultPage) {
+  if (item.name === defaultInfo.defaultPage) {
     item.alias = "";
     home = item;
   }
-  return item.name !== defaultPage;
+  return item.name !== defaultInfo.defaultPage;
+});
+localCache.setSession("home", {
+  url: home.path,
+  title: defaultInfo.defaultTitle,
+  name: home.name
 });
 routes[0].children = routes[0].children.concat([home]).concat(others);
 const router = new VueRouter({
@@ -62,9 +70,8 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // 登录界面登录成功之后，会把用户信息保存在会话
   // 存在时间为会话生命周期，页面关闭即失效。
-  let token = VueCookies.get("token");
-  let userInfo = localStorage.getItem("userInfo");
-  let userId = userInfo ? JSON.parse(userInfo).userId : "";
+  let token = localCache.getCookie("token");
+  let userId = localCache.getCache("userInfo")?.userId;
   if (to.path === "/Login") {
     if (token && token !== "null" && userId) {
       next({ path: "/" });

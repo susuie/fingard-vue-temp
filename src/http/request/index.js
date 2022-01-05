@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Message, Loading } from "element-ui";
+import localCache from "@/utils/cache";
 
 const DEAFULT_LOADING = true;
 
@@ -45,7 +46,7 @@ class HYRequest {
         if (data.code !== "0") {
           if (data.code === "3") {
             // under login
-            localStorage.setItem("userInfo", "");
+            localCache.deleteCache("userInfo");
             window.location.href = "/Login";
           } else {
             Message({

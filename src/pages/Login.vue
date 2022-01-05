@@ -40,11 +40,11 @@
 <script>
 import * as useable from "../utils/common";
 import * as common from "@/http/implement/common";
+import localCache from "@utils/cache";
 export default {
   name: "login",
   data() {
     return {
-      tips: "拖动左边滑块完成上方拼图",
       loginLogo: require("@assets/images/loginLogo.png"),
       loginData: {
         mobile: "",
@@ -53,15 +53,7 @@ export default {
       },
       time: null, //验证码倒计时
       rules: {},
-      visible: false,
-      disable: false,
-      //滑块x轴数据
-      slider: {
-        mx: 0,
-        bx: 0
-      },
-      //拼图是否正确
-      puzzle: false
+      disable: false
     };
   },
   methods: {
@@ -71,7 +63,7 @@ export default {
     varifyCode: function() {
       let that = this;
       let uuid = useable.getuuid();
-      that.$cookies.set("token", uuid, 8 * 60 * 60); //by seconds
+      localCache.setCookie("token", uuid, 8 * 60 * 60); //by seconds
       clearInterval(that.time);
       let verificationCode = useable.base64encode(
         that.loginData.verificationCode
@@ -85,10 +77,9 @@ export default {
         })
         .then(res => {
           let userInfo = res.data;
-          sessionStorage.clear();
-          localStorage.setItem("userInfo", JSON.stringify(userInfo));
-          this.$cookies.set("userName", userInfo.userName);
-          this.$cookies.set("userId", userInfo.userId);
+          localCache.clearSession();
+          localCache.setCache("userInfo", userInfo);
+          localCache.setCookie("userId", userInfo.userId);
           that.$router.push({ path: "/" });
         });
     }
